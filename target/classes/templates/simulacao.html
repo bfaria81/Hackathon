@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+            crossorigin="anonymous"></script>
+
+
+    <title>Simulação de Sensores</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<style>
+/* Estilo geral */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: darkgreen;
+    font-weight: bold;
+}
+
+/* Estilo para os títulos dos sensores */
+h2 {
+    margin-top: 20px;
+    color: #333;
+}
+
+/* Estilo para os campos de entrada de dados */
+.sensor-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.sensor-input label {
+    font-weight: bold;
+    flex: 1;
+    margin-right: 10px;
+    color: #555;
+}
+
+.sensor-input input {
+    flex: 2;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Estilo para os botões de simulação */
+.sensor-button {
+    text-align: center;
+        font-weight: bold;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo para os alertas */
+.sensor-alert p {
+    color: red;
+    font-weight: bold;
+    display: none;
+    margin: 0;
+
+}
+
+/* Estilo para o botão "Simular Todos" */
+#simularTodos {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Estilo para o input de tensão */
+.tensao-input {
+    flex: 2;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+
+#simularTodos:hover {
+    background-color: #1e7e34;
+}
+
+
+
+</style>
+<body>
+<div class="container">
+    <div class="row">
+        <h1>- - - SensorSolution - - - <img src="SensorSolution.jpeg" width="200" height="250"></h1>
+    <div class="col-6 mb-4">
+        <div class="sensor-input">
+            <h2>Simulação de Sensores</h2>
+            <div class="sensor-button">
+                <button id="simularTodos">Simular Todos</button>
+            </div>
+        </div>
+
+        <div class="sensor-input">
+            <h2>Temperatura</h2>
+            <div class="sensor-button">
+                <button id="simularTemperatura">Simular</button>
+            </div>
+        </div>
+        <div class="sensor-container">
+            <div class="sensor-input">
+                <label for="temperatura1">Temperatura 1 (°C):</label>
+                <input type="text" id="temperatura1" readonly>
+            </div>
+            <div class="sensor-input">
+                <label for="temperatura2">Temperatura 2 (°C):</label>
+                <input type="text" id="temperatura2" readonly>
+            </div>
+            <div class="sensor-input">
+                <label for="media">Média: 40 e 50 (°C):</label>
+                <input type="text" id="media" readonly>
+            </div>
+            <div class="sensor-button sensor-alert alert alert-danger" role="alert">
+                <p id="alertaTemperatura" style="display: none; color: red;">Alerta!! Temperatura Alta</p>
+            </div>
+        </div>
+
+        <div class="sensor-input">
+            <h2>Contagem de Peças</h2>
+            <div class="sensor-button">
+                <button id="simularContagemPecas">Simular</button>
+            </div>
+        </div>
+        <div class="sensor-container">
+            <div class="sensor-input">
+                <label for="contadorPecas">Peças Produzidas:</label>
+                <input type="text" id="contadorPecas" value="0" readonly>
+            </div>
+            <div class="sensor-button sensor-alert alert alert-danger" role="alert">
+                <p id="alertaPecas" style="display: none; color: red;">Alerta!! Máquina rodando em vazio</p>
+            </div>
+        </div>
+
+        <div class="sensor-input">
+            <h2>Oscilação de Tensão</h2>
+            <div class="sensor-button">
+                <button id="simularOscilacaoTensao">Simular</button>
+            </div>
+        </div>
+        <div class="sensor-container">
+            <div class="sensor-input">
+                <label for="tensao">Tensão entre 348 e 396 volts:</label>
+                <input type="text" id="tensao" readonly>
+            </div>
+            <div class="sensor-button sensor-alert alert alert-danger" role="alert">
+                <p id="alertaTensao" style="display: none; color: red;">Alerta!! Oscilação de Tensão</p>
+            </div>
+        </div>
+
+        <div class="sensor-input">
+            <h2>Nível de Óleo</h2>
+            <div class="sensor-button">
+                <button id="simularNivelOleo">Simular</button>
+            </div>
+        </div>
+        <div class="sensor-container">
+            <div class="sensor-input">
+                <label for="oleo">Nível de Óleo:</label>
+                <input type="text" id="oleo" readonly>
+            </div>
+            <div class="sensor-button sensor-alert alert alert-danger" role="alert">
+                <p id="alertaOleo" style="display: none; color: red;">Alerta!! Nível de óleo baixo</p>
+            </div>
+        </div>
+
+
+    </div>
+        <div class="col-1"></div>
+    <div class="col-5 mb-4">
+        <h2>Gráficos</h2>
+
+        <div>
+            <div> Temperatura:
+            <canvas id="graficoTemperatura" width="400" height="200"></canvas>
+            </div>
+            <div> Contagem de Peças:
+            <canvas id="graficoContagemPecas" width="400" height="200"></canvas>
+            </div>
+            <div> Oscilação de Tensão:
+            <canvas id="graficoOscilacaoTensao" width="400" height="200"></canvas>
+            </div>
+            <div> Nível de Óleo:
+            <canvas id="graficoNivelOleo" width="200" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+
+// Função para gerar um valor aleatório entre 40 e 50 graus Celsius
+    function gerarTemperaturaAleatoria() {
+        return (Math.random() * 10 + 40).toFixed(2); // Gera um valor entre 40 e 50
+    }
+
+    // Função para calcular a média das duas temperaturas
+    function calcularMedia(temperatura1, temperatura2) {
+        return ((parseFloat(temperatura1) + parseFloat(temperatura2)) / 2).toFixed(2);
+    }
+
+    // Função para atualizar os campos de temperatura e média
+    function atualizarCamposTemperatura() {
+        const temperatura1 = gerarTemperaturaAleatoria();
+        const temperatura2 = gerarTemperaturaAleatoria();
+        const media = calcularMedia(temperatura1, temperatura2);
+
+
+        $('#temperatura1').val(temperatura1);
+        $('#temperatura2').val(temperatura2);
+        $('#media').val(media);
+
+        if (media >= 49.00) {
+                $('#alertaTemperatura').show();
+            } else {
+                $('#alertaTemperatura').hide();
+            }
+    }
+
+    // Evento de clique no botão "Simular Temperatura"
+    $('#simularTemperatura').click(function () {
+        atualizarCamposTemperatura();
+    });
+
+    // Inicialização da simulação de temperatura
+    atualizarCamposTemperatura();
+
+    // Simulação de contagem de peças
+let contadorPecas = 0;
+const alertaPecas = $('#alertaPecas');
+const contadorInput = $('#contadorPecas');
+
+function simularContagemPecas() {
+    alertaPecas.hide();
+    const quantidade = Math.floor(Math.random() * 11);
+    if (quantidade === 0) {
+        alertaPecas.show();
+    }
+    contadorPecas += quantidade;
+    contadorInput.val(contadorPecas);
+}
+
+
+    // Evento de clique no botão "Simular Contagem de Peças"
+    $('#simularContagemPecas').click(function () {
+        simularContagemPecas();
+    });
+
+    // Simulação de oscilação de tensão
+    const alertaTensao = $('#alertaTensao');
+    const tensaoSpan = $('#tensao');
+
+    function simularOscilacaoTensao() {
+        const tensao = (Math.random() * 58 + 343).toFixed(2); // Gera um valor entre 343 e 401
+        tensaoSpan.val(tensao);
+
+        if (tensao < 348 || tensao > 396) {
+            alertaTensao.show();
+        } else {
+            alertaTensao.hide();
+        }
+    }
+
+    // Evento de clique no botão "Simular Oscilação de Tensão"
+    $('#simularOscilacaoTensao').click(function () {
+        simularOscilacaoTensao();
+    });
+
+    // Inicialização da simulação de oscilação de tensão
+    simularOscilacaoTensao();
+
+    // Evento de clique no botão "Simular Todos"
+    $('#simularTodos').click(function () {
+            atualizarCamposTemperatura();
+            simularContagemPecas();
+            simularOscilacaoTensao();
+            simularNivelOleo();
+        });
+
+// Simulação de nível de óleo
+let nivelOleo = 100; // Nível máximo de óleo em porcentagem
+const alertaOleo = $('#alertaOleo');
+const oleoInput = $('#oleo');
+
+function simularNivelOleo() {
+    if (nivelOleo <= 40) {
+        alertaOleo.show();
+    } else {
+        alertaOleo.hide();
+    }
+
+    oleoInput.val(nivelOleo + '%');
+    nivelOleo--; // Reduz o nível de óleo a cada simulação
+}
+
+// Evento de clique no botão "Simular Nível de Óleo"
+$('#simularNivelOleo').click(function () {
+    simularNivelOleo();
+});
+
+// Inicialização da simulação de nível de óleo
+simularNivelOleo();
+
+
+const maxPontosNoGraficoTemp = 10; // Número máximo de pontos a serem exibidos
+
+const temperaturaData = {
+  labels: [],
+  datasets: [
+    {
+      label: 'Temperatura 1 (°C)',
+      data: [],
+      borderColor: 'rgba(255, 99, 132, 1)',
+      backgroundColor: 'rgba(245, 89, 112)',
+      borderWidth: 1,
+      fill: false,
+    },
+    {
+      label: 'Temperatura 2 (°C)',
+      data: [],
+      borderColor: 'rgba(0, 99, 255, 1)',
+      backgroundColor: 'rgba(0, 89, 245)',
+      borderWidth: 1,
+      fill: false,
+    },
+    {
+      label: 'Média (°C)',
+      data: [],
+      borderColor: 'rgba(0, 255, 0, 1)',
+      backgroundColor: 'rgba(0, 245, 0)',
+      borderWidth: 1,
+      fill: false,
+    },
+  ],
+};
+
+const ctxTemperatura = document.getElementById('graficoTemperatura').getContext('2d');
+
+const graficoTemperatura = new Chart(ctxTemperatura, {
+  type: 'line',
+  data: temperaturaData,
+  options: {
+    responsive: true,
+  },
+});
+
+function atualizarGraficoTemperatura() {
+  const temperatura1 = parseFloat(document.getElementById('temperatura1').value);
+  const temperatura2 = parseFloat(document.getElementById('temperatura2').value);
+  const media = parseFloat(document.getElementById('media').value);
+
+  const tempoAtual = new Date().toLocaleTimeString();
+
+  temperaturaData.labels.push(tempoAtual);
+  temperaturaData.datasets[0].data.push(temperatura1);
+  temperaturaData.datasets[1].data.push(temperatura2);
+  temperaturaData.datasets[2].data.push(media);
+
+  // Mantenha apenas os últimos 'maxPontosNoGrafico' pontos
+  if (temperaturaData.labels.length > maxPontosNoGraficoTemp) {
+    temperaturaData.labels.shift();
+    temperaturaData.datasets[0].data.shift();
+    temperaturaData.datasets[1].data.shift();
+    temperaturaData.datasets[2].data.shift();
+  }
+
+  graficoTemperatura.update("none");
+}
+
+document.getElementById('simularTemperatura').addEventListener('click', atualizarGraficoTemperatura);
+
+
+
+
+  // Gráfico de Contagem de Peças
+  const ctxContagemPecas = document.getElementById('graficoContagemPecas').getContext('2d');
+  const graficoContagemPecas = new Chart(ctxContagemPecas, {
+    type: 'bar',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Contagem de Peças',
+        data: [],
+        backgroundColor: 'rgba(75, 192, 192)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          beginAtZero: true
+        },
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  function atualizarGraficoContagemPecas() {
+    const contadorPecas = parseFloat(document.getElementById('contadorPecas').value);
+    const tempoAtual = new Date().toLocaleTimeString();
+
+    graficoContagemPecas.data.labels.push(tempoAtual);
+    graficoContagemPecas.data.datasets[0].data.push(contadorPecas);
+
+    graficoContagemPecas.update();
+  }
+
+  document.getElementById('simularContagemPecas').addEventListener('click', atualizarGraficoContagemPecas);
+
+// Gráfico de Oscilação de Tensão
+const ctxOscilacaoTensao = document.getElementById('graficoOscilacaoTensao').getContext('2d');
+const maxPontosNoGrafico = 40; // Número máximo de pontos a serem exibidos
+
+const tensaoData = {
+    labels: [],
+    datasets: [{
+        label: 'Tensão (Volts)',
+        data: [],
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+        pointBackgroundColor: [],
+    }]
+};
+
+// Crie o gráfico inicial com as configurações
+const graficoOscilacaoTensao = new Chart(ctxOscilacaoTensao, {
+    type: 'line',
+    data: tensaoData,
+    options: {
+        responsive: true,
+        scales: {
+            x: {
+                beginAtZero: true
+            },
+            y: {
+                beginAtZero: false
+            }
+        }
+    }
+});
+
+function atualizarGraficoOscilacaoTensao() {
+    const tensao = parseFloat(document.getElementById('tensao').value);
+    const tempoAtual = new Date().toLocaleTimeString();
+
+    tensaoData.labels.push(tempoAtual);
+    tensaoData.datasets[0].data.push(tensao);
+
+    // Verificar se a tensão está fora dos limites
+    if (tensao < 348 || tensao > 396) {
+        // Adicionar um ponto de alerta com a cor azul
+        tensaoData.datasets[0].pointBackgroundColor.push('blue');
+    } else {
+        // Adicionar um ponto normal com a cor padrão
+        tensaoData.datasets[0].pointBackgroundColor.push('rgba(255, 99, 132, 1)');
+    }
+
+    // Manter apenas os últimos 'maxPontosNoGrafico' pontos
+    if (tensaoData.labels.length > maxPontosNoGrafico) {
+        tensaoData.labels.shift();
+        tensaoData.datasets[0].data.shift();
+        tensaoData.datasets[0].pointBackgroundColor.shift();
+    }
+
+    graficoOscilacaoTensao.update("none"); // A atualização é imediata
+}
+
+document.getElementById('simularOscilacaoTensao').addEventListener('click', atualizarGraficoOscilacaoTensao);
+
+
+// Gráfico de Nível de Óleo
+const ctxNivelOleo = document.getElementById('graficoNivelOleo').getContext('2d');
+const graficoNivelOleo = new Chart(ctxNivelOleo, {
+
+  type: 'doughnut',
+  data: {
+    labels: ['Nível de Óleo', ''],
+    datasets: [{
+      data: [0, 100],
+      backgroundColor: ['green', '#E6E6E6'],
+    }]
+  },
+  options: {
+    cutout: '80%',
+    responsive: true,
+  }
+});
+
+function atualizarGraficoNivelOleo() {
+  const nivelOleo = parseFloat(document.getElementById('oleo').value);
+
+  // Certifique-se de que o nível de óleo não seja menor que 0
+  if (nivelOleo < 0) {
+    graficoNivelOleo.data.datasets[0].data[0] = 0;
+    graficoNivelOleo.data.datasets[0].data[1] = 100;
+  } else {
+    graficoNivelOleo.data.datasets[0].data[0] = nivelOleo;
+    graficoNivelOleo.data.datasets[0].data[1] = 100 - nivelOleo;
+  }
+
+  // Verifique se o nível é menor que 40% e atualize a cor de fundo em laranja
+  if (nivelOleo <= 40) {
+    graficoNivelOleo.data.datasets[0].backgroundColor = ['orange', '#E6E6E6'];
+  }
+
+  // Verifique se o nível é menor que 15% e atualize a cor de fundo em vermelho
+  if (nivelOleo <= 15) {
+    graficoNivelOleo.data.datasets[0].backgroundColor = ['red', '#E6E6E6'];
+  }
+
+  graficoNivelOleo.update();
+}
+
+document.getElementById('simularNivelOleo').addEventListener('click', atualizarGraficoNivelOleo);
+
+
+function atualizarGraficos() {
+        atualizarGraficoTemperatura();
+        atualizarGraficoContagemPecas();
+        atualizarGraficoOscilacaoTensao();
+        atualizarGraficoNivelOleo();
+    }
+
+    // Evento de clique no botão "Simular Todos"
+    document.getElementById('simularTodos').addEventListener('click', function() {
+        atualizarGraficos();
+    });
+
+
+</script>
+
+
+</body>
+</html>
